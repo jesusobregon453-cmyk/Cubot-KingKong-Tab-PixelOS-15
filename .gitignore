@@ -1,0 +1,16 @@
+﻿*.img
+*.img.xz
+*.zip
+roms/
+backup/
+rom_build/
+apps/patched_launcher/smali*
+apps/hyperos_native/
+hyperos_custom_rom/
+tools/apktool.jar
+tools/framework.jar
+tools/UsbDk_1.0.22_x64.msi
+tools/usb_driver.zip
+tools/uber-apk-signer.jar
+tools/baksmali.jar
+tools/smali.jar
