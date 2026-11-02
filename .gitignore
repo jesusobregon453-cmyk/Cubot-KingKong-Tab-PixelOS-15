@@ -1,16 +1,28 @@
-﻿*.img
+# Images and archives
+*.img
 *.img.xz
 *.zip
+
+# Exception for small essential compatibility images (<15MB)
+!dist/product_empty.img
+
+# Temporary and build folders
 roms/
 backup/
 rom_build/
-apps/patched_launcher/smali*
-apps/hyperos_native/
 hyperos_custom_rom/
-tools/apktool.jar
-tools/framework.jar
-tools/UsbDk_1.0.22_x64.msi
-tools/usb_driver.zip
-tools/uber-apk-signer.jar
-tools/baksmali.jar
-tools/smali.jar
+apps/
+tools/
+dist/HyperOS*
+dist/*hyperos*
+
+# Include dist scripts and tools
+!dist/flash_pixelos_android15.bat
+!dist/download_rom.bat
+!dist/install_driver.bat
+!dist/README_PIXELOS_15.md
+!dist/platform-tools/**
+!dist/usb_driver/**
+!screenshots/**
+
+hyperos_home.png

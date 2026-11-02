@@ -8,14 +8,38 @@ echo                 Dispositivo: Cubot KingKong Tab (MT8788)
 echo =======================================================================
 echo.
 echo Este instalador configurara automaticamente tu tablet con Android 15 puro,
-echo experiencia Pixel Tablet oficial, Google Play Services y aceleracion Mali.
+echo experiencia Google Pixel Tablet oficial, Google Play Services y
+echo aceleracion por hardware GPU Mali-G72.
 echo.
 echo Asegurate de que la tablet este conectada por USB con depuracion activada
 echo o en modo fastboot / fastbootd.
 echo.
-pause
 
+cd /d "%~dp0"
 set PATH=%~dp0platform-tools;%PATH%
+
+if not exist "PixelOS_15_CubotTab.img" (
+    echo [!] No se encontro 'PixelOS_15_CubotTab.img' en esta carpeta.
+    echo Deseas descargarla automaticamente ahora mismo?
+    echo.
+    set /p RESP="Descargar PixelOS 15 ahora? (S/N): "
+    if /i "%RESP%"=="S" (
+        call "%~dp0download_rom.bat"
+    ) else (
+        echo.
+        echo Por favor ejecuta 'download_rom.bat' primero o descarga la ROM manualmente.
+        pause
+        exit /b 1
+    )
+)
+
+if not exist "PixelOS_15_CubotTab.img" (
+    echo [ERROR] No se encontro la imagen del sistema PixelOS_15_CubotTab.img.
+    pause
+    exit /b 1
+)
+
+pause
 
 echo.
 echo [*] Verificando conexion del dispositivo...
@@ -32,14 +56,19 @@ echo [*] Verificando modo fastbootd userspace...
 fastboot getvar is-userspace
 
 echo.
-echo [*] Flasheando particion de compatibilidad product_a...
+echo [*] Configurando particiones dinamicas super...
+fastboot delete-logical-partition product_a >nul 2>&1
 fastboot create-logical-partition product_a 10485760 >nul 2>&1
+if exist "%~dp0product_empty.img" (
+    echo [*] Flasheando particion de compatibilidad product_a...
+    fastboot flash product_a "%~dp0product_empty.img"
+)
 
 echo.
-echo [*] Flasheando PixelOS Android 15 en system_a...
-fastboot flash system_a  %~dp0PixelOS_15_CubotTab.img
+echo [*] Flasheando PixelOS Android 15 en system_a (puede tardar 2-3 minutos)...
+fastboot flash system_a "%~dp0PixelOS_15_CubotTab.img"
 if errorlevel 1 (
-    echo [ERROR] Error durante el flasheo de la imagen.
+    echo [ERROR] Fallo el flasheo de system_a.
     pause
     exit /b 1
 )
@@ -50,7 +79,7 @@ fastboot erase userdata
 fastboot erase metadata
 
 echo.
-echo [*] Configurando arranque automatico de vehiculo (Ignicion ON = Enciende)...
+echo [*] Configurando auto-arranque para vehiculo (Ignicion ON = Enciende tablet)...
 fastboot oem off-mode-charge 0 >nul 2>&1
 
 echo.
